@@ -7,7 +7,11 @@ USERNAME = "sabyasachisabs"
 OUTPUT = Path("index.html")
 
 # Keep empty to include all repos for the selected profile.
-ALLOWED_PREFIXES: tuple[str, ...] = ()
+ALLOWED_PREFIXES = (
+    "Network_Engineering_Labs",
+    "Cybersecurity_Labs",
+    "Python-for-AI-Labs",
+)
 
 
 def repo_allowed(repo_name: str) -> bool:
