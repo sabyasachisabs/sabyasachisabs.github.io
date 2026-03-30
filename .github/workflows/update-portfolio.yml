@@ -1,0 +1,46 @@
+name: Update portfolio
+
+on:
+  repository_dispatch:
+    types: [refresh-portfolio]
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - "generate_portfolio.py"
+      - "style.css"
+      - ".github/workflows/update-portfolio.yml"
+
+jobs:
+  refresh-site:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Regenerate index page
+        run: python generate_portfolio.py
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet; then
+            git add index.html
+            git commit -m "Auto-update portfolio"
+            git push
+          else
+            echo "No changes detected."
+          fi

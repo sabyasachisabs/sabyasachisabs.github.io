@@ -1,0 +1,105 @@
+:root {
+  --bg: #030712;
+  --panel: #111827;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --accent: #38bdf8;
+  --border: #1f2937;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color: var(--text);
+  background: radial-gradient(circle at top, #0b1324 0%, var(--bg) 55%);
+}
+
+.container {
+  width: min(1080px, 92%);
+  margin: 40px auto 70px;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+}
+
+.hero p {
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+.hero a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.hero a:hover {
+  text-decoration: underline;
+}
+
+.grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.repo-card {
+  background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.repo-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.repo-card h2 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+}
+
+.repo-card h2 a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.repo-card h2 a:hover {
+  color: var(--accent);
+}
+
+.description {
+  margin: 0 0 12px;
+  color: var(--muted);
+  min-height: 2.8em;
+}
+
+.meta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.badge {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px 8px;
+  color: var(--accent);
+}
+
+.empty {
+  color: var(--muted);
+}
