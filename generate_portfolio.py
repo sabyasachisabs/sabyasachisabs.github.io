@@ -8,9 +8,8 @@ OUTPUT = Path("index.html")
 
 # Keep empty to include all repos for the selected profile.
 ALLOWED_PREFIXES = (
-    "Network_Engineering_Labs",
-    "Cybersecurity_Labs",
-    "Python-for-AI-Labs",
+    "v0-cybersecurity-cv",
+    "dutchlingo-playground",
 )
 
 
