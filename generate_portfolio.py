@@ -21,10 +21,7 @@ TERMINAL_LINES = (
 )
 
 # Keep empty to include all repos for the selected profile.
-ALLOWED_PREFIXES = (
-    "v0-cybersecurity-cv",
-    "dutchlingo-playground",
-)
+ALLOWED_PREFIXES = ()
 
 CERTIFICATIONS = (
     {
