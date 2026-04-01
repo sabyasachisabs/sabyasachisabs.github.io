@@ -5,7 +5,7 @@ import requests
 
 USERNAME = "sabyasachisabs"
 OUTPUT = Path("index.html")
-SITE_BRAND = "Portfolio"
+SITE_BRAND = "Nehal Solanki Portfolio"
 LOGO_LETTER = "N"
 PROFILE_PHOTO_URL = ""
 PROFILE_NAME = "Nehal Solanki"
@@ -17,7 +17,7 @@ HERO_INTRO = (
     "I build clear, practical solutions and I'm open to Network, NOC, and entry-level security roles."
 )
 STATS = (
-    ("10+", "Years in IT"),
+    ("10+", "Years"),
     ("6+", "Certifications"),
     ("3", "GitHub Projects"),
 )
