@@ -73,13 +73,34 @@ WHERE_I_LIVE_BODY = (
 # Keep empty to include all repos for the selected profile.
 ALLOWED_PREFIXES = ()
 
-CERTIFICATIONS = (
+TECHNICAL_CERTIFICATIONS = (
     {
         "title": "CompTIA Security+ Certified",
         "issuer": "CompTIA",
         "year": "2025",
         "url": "#",
     },
+    {
+        "title": "Deloitte Australia - Cyber Job Simulation",
+        "issuer": "Deloitte Australia",
+        "year": "",
+        "url": "#",
+    },
+    {
+        "title": "Cybersecurity Compliance and Regulatory Essentials for GRC Analysts",
+        "issuer": "Professional Training",
+        "year": "",
+        "url": "#",
+    },
+    {
+        "title": "Performing a Technical Security Audit and Assessment",
+        "issuer": "Professional Training",
+        "year": "",
+        "url": "#",
+    },
+)
+
+LANGUAGE_CERTIFICATIONS = (
     {
         "title": "A2/NT2 Nederlands Certified",
         "issuer": "NT2",
@@ -89,24 +110,6 @@ CERTIFICATIONS = (
     {
         "title": "B1 Nederlands",
         "issuer": "Dutch Language Certification",
-        "year": "N/A",
-        "url": "#",
-    },
-    {
-        "title": "Deloitte Australia - Cyber Job Simulation",
-        "issuer": "Deloitte Australia",
-        "year": "N/A",
-        "url": "#",
-    },
-    {
-        "title": "Cybersecurity Compliance and Regulatory Essentials for GRC Analysts",
-        "issuer": "Professional Training",
-        "year": "N/A",
-        "url": "#",
-    },
-    {
-        "title": "Performing a Technical Security Audit and Assessment",
-        "issuer": "Professional Training",
         "year": "N/A",
         "url": "#",
     },
@@ -175,9 +178,9 @@ def build_repo_cards(repos: list[dict]) -> str:
     return "\n".join(cards)
 
 
-def build_certification_cards() -> str:
+def build_cert_cards_for(certs: tuple[dict, ...]) -> str:
     cards: list[str] = []
-    for cert in CERTIFICATIONS:
+    for cert in certs:
         title = html.escape(cert["title"])
         issuer = html.escape(cert["issuer"])
         year = html.escape(cert["year"])
@@ -192,6 +195,27 @@ def build_certification_cards() -> str:
         """.strip()
         )
     return "\n".join(cards)
+
+
+def build_certifications_section() -> str:
+    tech_cards = build_cert_cards_for(TECHNICAL_CERTIFICATIONS)
+    lang_cards = build_cert_cards_for(LANGUAGE_CERTIFICATIONS)
+    return f"""
+        <div class="cert-sections">
+          <div class="cert-subsection">
+            <h3 class="cert-subsection-title">Technical</h3>
+            <div class="cert-grid">
+              {tech_cards}
+            </div>
+          </div>
+          <div class="cert-subsection">
+            <h3 class="cert-subsection-title">Language</h3>
+            <div class="cert-grid">
+              {lang_cards}
+            </div>
+          </div>
+        </div>
+        """.strip()
 
 
 def initials_from_name(name: str) -> str:
@@ -259,7 +283,7 @@ def build_hero_image_block(photo_url: str, alt: str, initials: str) -> str:
 def build_html(repos: list[dict]) -> str:
     cards = build_repo_cards(repos)
     beyond_cards = build_beyond_work_cards(BEYOND_WORK_ITEMS)
-    cert_cards = build_certification_cards()
+    certifications_block = build_certifications_section()
     stat_cards = build_stat_cards(STATS)
     hero_visual = build_hero_image_block(
         PROFILE_PHOTO_URL,
@@ -360,11 +384,9 @@ def build_html(repos: list[dict]) -> str:
       <section id="certifications" class="section">
         <div class="section-head">
           <h2>Certifications</h2>
-          <p>Courses and trainings.</p>
+          <p>Courses and trainings—technical credentials and language proficiency.</p>
         </div>
-        <div class="cert-grid">
-          {cert_cards}
-        </div>
+        {certifications_block}
       </section>
 
       <section id="portfolio" class="section">

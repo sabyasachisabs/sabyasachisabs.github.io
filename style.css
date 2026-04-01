@@ -423,6 +423,26 @@ body {
   font-weight: 500;
 }
 
+.cert-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.cert-subsection {
+  margin: 0;
+}
+
+.cert-subsection-title {
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--purple-dark);
+  letter-spacing: 0.02em;
+  border-bottom: 2px solid var(--purple-soft);
+}
+
 .cert-grid {
   display: grid;
   gap: 16px;
