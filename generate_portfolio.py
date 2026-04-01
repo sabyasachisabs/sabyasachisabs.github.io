@@ -78,42 +78,6 @@ ABOUT_ME = (
     "and access control, with long-term interest in Network and Cloud Security roles."
 )
 
-SKILLS = (
-    "Network Security",
-    "Identity and Access Management (IAM)",
-    "Access Governance",
-    "VLAN Segmentation",
-    "Routing and Switching",
-    "Active Directory",
-    "LDAP",
-    "RSA Authentication Manager",
-    "BMC Remedy (ITSM)",
-    "UNIX Access Administration",
-    "Security Audits",
-)
-
-TIMELINE = (
-    {
-        "year": "2024",
-        "title": "Python for AI Intern",
-        "org": "BlockVerse Institute (Netherlands)",
-        "detail": "Completed internship focused on practical Python applications and structured technical learning.",
-    },
-    {
-        "year": "2012-2013",
-        "title": "IT Security Administrator - IAM",
-        "org": "Accenture (via Qsource Consulting)",
-        "detail": "Managed enterprise provisioning, account lifecycle, and access controls for SOX-sensitive systems.",
-    },
-    {
-        "year": "2009-2010",
-        "title": "Online Sales Support Specialist",
-        "org": "Etech, Inc.",
-        "detail": "Led customer support operations and process improvement with consistent quality focus.",
-    },
-)
-
-
 def repo_allowed(repo_name: str) -> bool:
     if not ALLOWED_PREFIXES:
         return True
@@ -196,10 +160,6 @@ def build_certification_cards() -> str:
     return "\n".join(cards)
 
 
-def build_skill_badges(items: tuple[str, ...]) -> str:
-    return "\n".join(f'<span class="skill-pill">{html.escape(item)}</span>' for item in items)
-
-
 def initials_from_name(name: str) -> str:
     parts = name.split()
     if len(parts) >= 2:
@@ -238,33 +198,9 @@ def build_hero_image_block(photo_url: str, alt: str, initials: str) -> str:
         """.strip()
 
 
-def build_timeline_items(items: tuple[dict, ...]) -> str:
-    timeline_items: list[str] = []
-    for item in items:
-        year = html.escape(item["year"])
-        title = html.escape(item["title"])
-        org = html.escape(item["org"])
-        detail = html.escape(item["detail"])
-        timeline_items.append(
-            f"""
-        <article class="timeline-item">
-          <div class="timeline-year">{year}</div>
-          <div class="timeline-body">
-            <h3>{title}</h3>
-            <p class="timeline-org">{org}</p>
-            <p>{detail}</p>
-          </div>
-        </article>
-        """.strip()
-        )
-    return "\n".join(timeline_items)
-
-
 def build_html(repos: list[dict]) -> str:
     cards = build_repo_cards(repos)
     cert_cards = build_certification_cards()
-    skill_badges = build_skill_badges(SKILLS)
-    timeline_items = build_timeline_items(TIMELINE)
     stat_cards = build_stat_cards(STATS)
     hero_visual = build_hero_image_block(
         PROFILE_PHOTO_URL,
@@ -304,10 +240,8 @@ def build_html(repos: list[dict]) -> str:
       <nav class="nav" aria-label="Primary">
         <a href="#home">Home</a>
         <a href="#about">About</a>
-        <a href="#skills">Skills</a>
         <a href="#portfolio">Portfolio</a>
         <a href="#certifications">Certifications</a>
-        <a href="#timeline">Experience</a>
       </nav>
       <a class="btn-contact" href="{safe_linkedin}" target="_blank" rel="noopener noreferrer">Contact</a>
     </header>
@@ -346,14 +280,6 @@ def build_html(repos: list[dict]) -> str:
         </div>
       </section>
 
-      <section id="skills" class="section">
-        <div class="section-head">
-          <h2>Core Skills</h2>
-          <p>Tools and domains I work with.</p>
-        </div>
-        <div class="skills">{skill_badges}</div>
-      </section>
-
       <section id="certifications" class="section">
         <div class="section-head">
           <h2>Certifications</h2>
@@ -361,16 +287,6 @@ def build_html(repos: list[dict]) -> str:
         </div>
         <div class="cert-grid">
           {cert_cards}
-        </div>
-      </section>
-
-      <section id="timeline" class="section">
-        <div class="section-head">
-          <h2>Experience</h2>
-          <p>Selected roles and milestones.</p>
-        </div>
-        <div class="timeline">
-          {timeline_items}
         </div>
       </section>
 
