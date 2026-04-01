@@ -5,7 +5,9 @@ import requests
 
 USERNAME = "sabyasachisabs"
 OUTPUT = Path("index.html")
-PROFILE_PHOTO_URL = f"https://github.com/{USERNAME}.png"
+SITE_BRAND = "Portfolio"
+LOGO_LETTER = "N"
+PROFILE_PHOTO_URL = ""
 PROFILE_NAME = "Nehal Solanki"
 PROFILE_TAGLINE = "Aspiring Network Security Engineer | Security+ Certified | CCNA Candidate | IAM Experience"
 PROFILE_LOCATION = "Randstad, Netherlands"
@@ -13,11 +15,16 @@ PROFILE_EMAIL = "Please connect via LinkedIn"
 PROFILE_PHONE = "Available on request"
 RESUME_LINK = "#"
 LINKEDIN_URL = "https://www.linkedin.com/in/nehal-solanki"
-TERMINAL_LINES = (
-    "Initializing profile context...",
-    "Loading security projects...",
-    "Mapping certifications and experience timeline...",
-    "Status: Online",
+ABOUT_HEADLINE = "Security-focused network and IAM professional"
+HERO_INTRO = (
+    f"I'm {PROFILE_NAME.split()[0]}, a security-focused IT professional based in {PROFILE_LOCATION}. "
+    "I combine enterprise Identity and Access Management experience with hands-on network security labs. "
+    "I build clear, practical solutions and I'm open to Network, NOC, and entry-level security roles."
+)
+STATS = (
+    ("10+", "Years in IT"),
+    ("6+", "Certifications"),
+    ("2", "GitHub Projects"),
 )
 
 # Keep empty to include all repos for the selected profile.
@@ -193,10 +200,42 @@ def build_skill_badges(items: tuple[str, ...]) -> str:
     return "\n".join(f'<span class="skill-pill">{html.escape(item)}</span>' for item in items)
 
 
-def build_terminal_lines(lines: tuple[str, ...]) -> str:
-    return "\n".join(
-        f'<p><span class="prompt">$</span> {html.escape(line)}</p>' for line in lines
-    )
+def initials_from_name(name: str) -> str:
+    parts = name.split()
+    if len(parts) >= 2:
+        return (parts[0][0] + parts[-1][0]).upper()
+    return name[:2].upper() if name else "?"
+
+
+def build_stat_cards(stats: tuple[tuple[str, str], ...]) -> str:
+    cards: list[str] = []
+    for value, label in stats:
+        cards.append(
+            f"""
+        <div class="stat-card">
+          <span class="stat-value">{html.escape(value)}</span>
+          <span class="stat-label">{html.escape(label)}</span>
+        </div>
+        """.strip()
+        )
+    return "\n".join(cards)
+
+
+def build_hero_image_block(photo_url: str, alt: str, initials: str) -> str:
+    if photo_url.strip():
+        safe_url = html.escape(photo_url)
+        safe_alt = html.escape(alt)
+        return f"""
+        <div class="hero-image-wrap">
+          <img src="{safe_url}" alt="{safe_alt}" width="420" height="525" />
+        </div>
+        """.strip()
+    safe_initials = html.escape(initials)
+    return f"""
+        <div class="hero-image-wrap" aria-hidden="true">
+          <div class="hero-placeholder">{safe_initials}</div>
+        </div>
+        """.strip()
 
 
 def build_timeline_items(items: tuple[dict, ...]) -> str:
@@ -225,82 +264,129 @@ def build_html(repos: list[dict]) -> str:
     cards = build_repo_cards(repos)
     cert_cards = build_certification_cards()
     skill_badges = build_skill_badges(SKILLS)
-    terminal_lines = build_terminal_lines(TERMINAL_LINES)
     timeline_items = build_timeline_items(TIMELINE)
+    stat_cards = build_stat_cards(STATS)
+    hero_visual = build_hero_image_block(
+        PROFILE_PHOTO_URL,
+        f"{PROFILE_NAME} portrait",
+        initials_from_name(PROFILE_NAME),
+    )
     safe_tagline = html.escape(PROFILE_TAGLINE)
     safe_location = html.escape(PROFILE_LOCATION)
     safe_email = html.escape(PROFILE_EMAIL)
     safe_phone = html.escape(PROFILE_PHONE)
     safe_resume = html.escape(RESUME_LINK)
     safe_linkedin = html.escape(LINKEDIN_URL)
-    safe_photo = html.escape(PROFILE_PHOTO_URL)
+    safe_brand = html.escape(SITE_BRAND)
+    safe_logo_letter = html.escape(LOGO_LETTER)
+    safe_hero_intro = html.escape(HERO_INTRO)
+    safe_about_headline = html.escape(ABOUT_HEADLINE)
+    safe_first = html.escape(PROFILE_NAME.split()[0])
+    safe_initials = html.escape(initials_from_name(PROFILE_NAME))
+    safe_footer_name = html.escape(PROFILE_NAME.split()[0])
+    safe_page_title = html.escape(f"{PROFILE_NAME} | Portfolio")
 
     return f"""<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>sabyasachisabs | Portfolio</title>
+    <title>{safe_page_title}</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="page-bg" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="logo" href="#home">
+        <span class="logo-mark">{safe_logo_letter}</span>
+        {safe_brand}
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#skills">Skills</a>
+        <a href="#portfolio">Portfolio</a>
+        <a href="#certifications">Certifications</a>
+        <a href="#timeline">Experience</a>
+      </nav>
+      <a class="btn-contact" href="{safe_linkedin}" target="_blank" rel="noopener noreferrer">Contact</a>
+    </header>
+
     <main class="container">
-      <header class="hero panel">
-        <div class="hero-top">
-          <img class="avatar" src="{safe_photo}" alt="{USERNAME} profile photo" />
-          <div>
-            <p class="kicker">CYBERSECURITY PORTFOLIO</p>
-            <h1 class="glitch" data-text="{PROFILE_NAME}">{PROFILE_NAME}</h1>
-            <p class="tagline">{safe_tagline}</p>
+      <section id="home" class="hero">
+        <div class="hero-inner">
+          <div class="hero-copy">
+            <h1>Hello, I'm {safe_first}</h1>
+            <p class="hero-lead">{safe_hero_intro}</p>
+            <a class="btn-primary" href="{safe_linkedin}" target="_blank" rel="noopener noreferrer">Say Hello!</a>
+          </div>
+          <div class="hero-visual">
+            {hero_visual}
           </div>
         </div>
-        <div class="hero-meta">
-          <span>{safe_location}</span>
-          <span>{safe_email}</span>
-          <span>{safe_phone}</span>
+        <div class="hero-stats">
+          {stat_cards}
         </div>
-        <div class="hero-links">
-          <a href="https://github.com/{USERNAME}" target="_blank" rel="noopener noreferrer">GitHub</a>
-          <a href="{safe_linkedin}" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-          <a href="{safe_resume}" target="_blank" rel="noopener noreferrer">Resume</a>
-        </div>
-        <div class="terminal-box" aria-label="Profile status">
-          {terminal_lines}
-        </div>
-      </header>
+      </section>
 
-      <section class="section panel">
-        <h2>Core Skills</h2>
+      <section id="about" class="about-card">
+        <div class="about-thumb" aria-hidden="true">{safe_initials}</div>
+        <div>
+          <h2>{safe_about_headline}</h2>
+          <p class="about-copy">{html.escape(ABOUT_ME)}</p>
+          <p class="about-tagline"><strong>{safe_tagline}</strong></p>
+          <p class="about-meta">{safe_location} · {safe_email} · {safe_phone}</p>
+          <p class="about-links">
+            <a href="https://github.com/{USERNAME}" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <span class="about-sep">·</span>
+            <a href="{safe_linkedin}" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <span class="about-sep">·</span>
+            <a href="{safe_resume}">Resume</a>
+          </p>
+        </div>
+      </section>
+
+      <section id="skills" class="section">
+        <div class="section-head">
+          <h2>Core Skills</h2>
+          <p>Tools and domains I work with.</p>
+        </div>
         <div class="skills">{skill_badges}</div>
       </section>
 
-      <section class="section panel">
-        <h2>Certifications</h2>
+      <section id="certifications" class="section">
+        <div class="section-head">
+          <h2>Certifications</h2>
+          <p>Credentials and training.</p>
+        </div>
         <div class="cert-grid">
           {cert_cards}
         </div>
       </section>
 
-      <section class="section panel">
-        <h2>About Me</h2>
-        <p class="about-copy">{html.escape(ABOUT_ME)}</p>
-      </section>
-
-      <section class="section panel">
-        <h2>Timeline</h2>
+      <section id="timeline" class="section">
+        <div class="section-head">
+          <h2>Experience</h2>
+          <p>Selected roles and milestones.</p>
+        </div>
         <div class="timeline">
           {timeline_items}
         </div>
       </section>
 
-      <section class="section panel">
-        <h2>Projects</h2>
+      <section id="portfolio" class="section">
+        <div class="section-head">
+          <h2>Projects</h2>
+          <p>Repositories from my GitHub profile.</p>
+        </div>
         <div class="grid">
         {cards}
         </div>
       </section>
     </main>
+    <footer class="site-footer">
+      <p>© {safe_footer_name} · Built with GitHub Pages</p>
+    </footer>
   </body>
 </html>
 """
