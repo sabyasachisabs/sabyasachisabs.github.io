@@ -24,7 +24,47 @@ HERO_INTRO = (
 STATS = (
     ("10+", "Years in IT"),
     ("6+", "Certifications"),
-    ("2", "GitHub Projects"),
+    ("3", "GitHub Projects"),
+)
+
+BEYOND_WORK_SUBTITLE = (
+    "Outside of cybersecurity, simple things that keep me curious, calm, and continuously learning."
+)
+
+BEYOND_WORK_ITEMS = (
+    {
+        "title": "Avid Reader",
+        "emoji": "📖",
+        "body": (
+            "I enjoy reading books that simplify complex ideas—from technology and cybersecurity, "
+            "to personal growth and mindset."
+        ),
+        "image": (
+            "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800&q=80&auto=format&fit=crop"
+        ),
+    },
+    {
+        "title": "Plant Enthusiast",
+        "emoji": "🌿",
+        "body": (
+            "I enjoy taking care of indoor plants—each one has its own personality, "
+            "from low-maintenance to high-drama. My pothos is the extrovert; my snake plant keeps it calm."
+        ),
+        "image": (
+            "https://images.unsplash.com/photo-1466692476869-aef1c0d316fc?w=800&q=80&auto=format&fit=crop"
+        ),
+    },
+    {
+        "title": "Curious Traveler",
+        "emoji": "✈️",
+        "body": (
+            "I enjoy exploring cities across the Netherlands and Europe—experiencing culture, "
+            "architecture, and everyday life."
+        ),
+        "image": (
+            "https://images.unsplash.com/photo-1512470875652-21a62801adfe?w=800&q=80&auto=format&fit=crop"
+        ),
+    },
 )
 
 # Keep empty to include all repos for the selected profile.
@@ -106,39 +146,107 @@ def fetch_repos(username: str) -> list[dict]:
     return response.json()
 
 
-def build_repo_cards(repos: list[dict]) -> str:
-    cards: list[str] = []
+DIRECTORY_CATEGORY_ORDER = ("Networking", "Cybersecurity", "Python / AI", "Other")
 
+EXTERNAL_LINK_SVG = (
+    '<svg class="directory-open-icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">'
+    '<path fill="currentColor" fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/>'
+    '<path fill="currentColor" fill-rule="evenodd" d="M14.5 3a.5.5 0 0 1 0 1h-4.793l8.147 8.146a.5.5 0 0 1-.708.708L9 4.707V9.5a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 .5.5z"/>'
+    "</svg>"
+)
+
+
+def _truncate_summary(text: str, max_len: int = 200) -> str:
+    text = text.strip()
+    if not text:
+        return ""
+    if len(text) <= max_len:
+        return text
+    return text[: max_len - 1].rstrip() + "…"
+
+
+def build_project_directory(repos: list[dict]) -> str:
+    collected: list[dict] = []
     for repo in repos:
         name = repo.get("name", "")
         if not name or not repo_allowed(name):
             continue
+        collected.append(repo)
 
-        desc = html.escape(repo.get("description") or "No description provided.")
-        repo_url = html.escape(repo.get("html_url", ""))
-        language = html.escape(repo.get("language") or "N/A")
-        stars = repo.get("stargazers_count", 0)
-        category = html.escape(category_for_repo(name))
+    if not collected:
+        return '<p class="empty">No matching repositories found yet.</p>'
+
+    def sort_key(r: dict) -> tuple:
+        cat = category_for_repo(r["name"])
+        try:
+            ci = DIRECTORY_CATEGORY_ORDER.index(cat)
+        except ValueError:
+            ci = 99
+        return (ci, r["name"].lower())
+
+    collected.sort(key=sort_key)
+
+    rows: list[str] = []
+    for repo in collected:
+        name = repo["name"]
+        raw_desc = (repo.get("description") or "").strip()
+        summary = _truncate_summary(raw_desc)
+        summary_cell = html.escape(summary) if summary else '<span class="directory-empty">—</span>'
+        cat = category_for_repo(name)
+        lang = repo.get("language") or ""
+        lang_cell = html.escape(lang) if lang else '<span class="directory-empty">—</span>'
+        stars = int(repo.get("stargazers_count") or 0)
+        url = repo.get("html_url", "")
+        safe_url = html.escape(url)
         safe_name = html.escape(name)
+        safe_label = html.escape(f"Open {name} on GitHub")
+        safe_cat = html.escape(cat)
 
-        cards.append(
+        rows.append(
             f"""
-        <article class="repo-card">
-          <h2><a href="{repo_url}" target="_blank" rel="noopener noreferrer">{safe_name}</a></h2>
-          <p class="description">{desc}</p>
-          <div class="meta">
-            <span class="badge">{category}</span>
-            <span>{language}</span>
-            <span>★ {stars}</span>
-          </div>
-        </article>
+        <tr class="directory-row">
+          <th scope="row" class="directory-cell directory-cell-name">
+            <a class="directory-project-link" href="{safe_url}" target="_blank" rel="noopener noreferrer">{safe_name}</a>
+          </th>
+          <td class="directory-cell directory-summary">{summary_cell}</td>
+          <td class="directory-cell"><span class="directory-pill">{safe_cat}</span></td>
+          <td class="directory-cell directory-lang">{lang_cell}</td>
+          <td class="directory-cell directory-stars">{stars}</td>
+          <td class="directory-cell directory-open">
+            <a class="directory-open-link" href="{safe_url}" target="_blank" rel="noopener noreferrer" aria-label="{safe_label}">
+              {EXTERNAL_LINK_SVG}
+            </a>
+          </td>
+        </tr>
         """.strip()
         )
 
-    if not cards:
-        return '<p class="empty">No matching repositories found yet.</p>'
+    n = len(collected)
+    count_label = f"{n} listing" + ("s" if n != 1 else "")
+    rows_html = "".join(rows)
 
-    return "\n".join(cards)
+    return f"""
+    <div class="project-directory">
+      <p class="directory-meta">{html.escape(count_label)}</p>
+      <div class="directory-table-wrap">
+        <table class="directory-table">
+          <thead>
+            <tr>
+              <th scope="col">Project</th>
+              <th scope="col">Summary</th>
+              <th scope="col">Category</th>
+              <th scope="col">Language</th>
+              <th scope="col">Stars</th>
+              <th scope="col"><span class="visually-hidden">Open repository</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows_html}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    """
 
 
 def build_certification_cards() -> str:
@@ -165,6 +273,30 @@ def initials_from_name(name: str) -> str:
     if len(parts) >= 2:
         return (parts[0][0] + parts[-1][0]).upper()
     return name[:2].upper() if name else "?"
+
+
+def build_beyond_work_cards(items: tuple[dict, ...]) -> str:
+    cards: list[str] = []
+    for item in items:
+        title = html.escape(item["title"])
+        emoji = html.escape(str(item.get("emoji") or ""))
+        body = html.escape(item["body"])
+        img_url = html.escape(item["image"])
+        img_alt = html.escape(f"Illustration for {item['title']}")
+        cards.append(
+            f"""
+        <article class="beyond-card">
+          <div class="beyond-card-image-wrap">
+            <img class="beyond-card-image" src="{img_url}" alt="{img_alt}" loading="lazy" width="400" height="220" />
+          </div>
+          <div class="beyond-card-body">
+            <h3 class="beyond-card-title"><span class="beyond-card-emoji" aria-hidden="true">{emoji}</span> {title}</h3>
+            <p class="beyond-card-text">{body}</p>
+          </div>
+        </article>
+        """.strip()
+        )
+    return "\n".join(cards)
 
 
 def build_stat_cards(stats: tuple[tuple[str, str], ...]) -> str:
@@ -199,7 +331,8 @@ def build_hero_image_block(photo_url: str, alt: str, initials: str) -> str:
 
 
 def build_html(repos: list[dict]) -> str:
-    cards = build_repo_cards(repos)
+    project_directory = build_project_directory(repos)
+    beyond_cards = build_beyond_work_cards(BEYOND_WORK_ITEMS)
     cert_cards = build_certification_cards()
     stat_cards = build_stat_cards(STATS)
     hero_visual = build_hero_image_block(
@@ -221,6 +354,7 @@ def build_html(repos: list[dict]) -> str:
     safe_initials = html.escape(initials_from_name(PROFILE_NAME))
     safe_footer_name = html.escape(PROFILE_NAME.split()[0])
     safe_page_title = html.escape(f"{PROFILE_NAME} | Portfolio")
+    safe_beyond_subtitle = html.escape(BEYOND_WORK_SUBTITLE)
 
     return f"""<!doctype html>
 <html lang="en">
@@ -240,6 +374,7 @@ def build_html(repos: list[dict]) -> str:
       <nav class="nav" aria-label="Primary">
         <a href="#home">Home</a>
         <a href="#about">About</a>
+        <a href="#beyond-work">Beyond Work</a>
         <a href="#portfolio">Portfolio</a>
         <a href="#certifications">Certifications</a>
       </nav>
@@ -263,6 +398,16 @@ def build_html(repos: list[dict]) -> str:
         </div>
       </section>
 
+      <section id="beyond-work" class="section section-beyond">
+        <div class="section-head">
+          <h2>Beyond Work</h2>
+          <p>{safe_beyond_subtitle}</p>
+        </div>
+        <div class="beyond-grid">
+          {beyond_cards}
+        </div>
+      </section>
+
       <section id="about" class="about-card">
         <div class="about-thumb" aria-hidden="true">{safe_initials}</div>
         <div>
@@ -283,21 +428,19 @@ def build_html(repos: list[dict]) -> str:
       <section id="certifications" class="section">
         <div class="section-head">
           <h2>Certifications</h2>
-          <p>Credentials and training.</p>
+          <p>Courses and trainings.</p>
         </div>
         <div class="cert-grid">
           {cert_cards}
         </div>
       </section>
 
-      <section id="portfolio" class="section">
+      <section id="portfolio" class="section section-portfolio">
         <div class="section-head">
-          <h2>Projects</h2>
-          <p>Repositories from my GitHub profile.</p>
+          <h2>Portfolio</h2>
+          <p>Business directory of public GitHub repositories—sorted by category, then name.</p>
         </div>
-        <div class="grid">
-        {cards}
-        </div>
+        {project_directory}
       </section>
     </main>
     <footer class="site-footer">
