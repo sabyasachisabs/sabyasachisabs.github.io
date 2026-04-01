@@ -104,13 +104,13 @@ LANGUAGE_CERTIFICATIONS = (
     {
         "title": "A2/NT2 Nederlands Certified",
         "issuer": "NT2",
-        "year": "N/A",
+        "year": "",
         "url": "#",
     },
     {
         "title": "B1 Nederlands",
         "issuer": "Dutch Language Certification",
-        "year": "N/A",
+        "year": "",
         "url": "#",
     },
 )
@@ -178,19 +178,27 @@ def build_repo_cards(repos: list[dict]) -> str:
     return "\n".join(cards)
 
 
+def _cert_year_html(year_raw: str) -> str:
+    y = (year_raw or "").strip()
+    if not y or y.upper() == "N/A":
+        return ""
+    safe = html.escape(y)
+    return f'<span class="cert-year">{safe}</span>'
+
+
 def build_cert_cards_for(certs: tuple[dict, ...]) -> str:
     cards: list[str] = []
     for cert in certs:
         title = html.escape(cert["title"])
         issuer = html.escape(cert["issuer"])
-        year = html.escape(cert["year"])
         url = html.escape(cert["url"])
+        year_block = _cert_year_html(str(cert.get("year", "")))
         cards.append(
             f"""
         <article class="cert-card">
           <h3><a href="{url}" target="_blank" rel="noopener noreferrer">{title}</a></h3>
           <p>{issuer}</p>
-          <span class="cert-year">{year}</span>
+          {year_block}
         </article>
         """.strip()
         )
