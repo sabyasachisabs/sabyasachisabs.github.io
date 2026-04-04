@@ -46,7 +46,7 @@ BEYOND_WORK_ITEMS = (
             "from low-maintenance to high-drama. My pothos is the extrovert; my snake plant keeps it calm."
         ),
         "image": (
-            "https://images.unsplash.com/photo-1466692476869-aef1c0d316fc?w=800&q=80&auto=format&fit=crop"
+            "https://images.unsplash.com/photo-1592150621744-aca64f48394a?w=800&q=80&auto=format&fit=crop"
         ),
     },
     {
@@ -57,7 +57,7 @@ BEYOND_WORK_ITEMS = (
             "architecture, and everyday life."
         ),
         "image": (
-            "https://images.unsplash.com/photo-1512470875652-21a62801adfe?w=800&q=80&auto=format&fit=crop"
+            "https://images.unsplash.com/photo-1512617835784-a92626c0a554?w=800&q=80&auto=format&fit=crop"
         ),
     },
 )
