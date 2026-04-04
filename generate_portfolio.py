@@ -333,8 +333,8 @@ def build_html(repos: list[dict]) -> str:
         <a href="#home">Home</a>
         <a href="#beyond-work">Beyond Work</a>
         <a href="#where-i-live">Where I Live</a>
-        <a href="#portfolio">Portfolio</a>
         <a href="#certifications">Certifications</a>
+        <a href="#portfolio">Portfolio</a>
       </nav>
       <a class="btn-contact" href="{safe_linkedin}" target="_blank" rel="noopener noreferrer">Contact</a>
     </header>
