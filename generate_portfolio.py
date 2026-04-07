@@ -132,7 +132,7 @@ def category_for_repo(repo_name: str) -> str:
 
 
 def fetch_repos(username: str) -> list[dict]:
-    url = f"https://api.github.com/users/{username}/repos"
+    url = f"https://api.github.com/users/nehalsolanki01/repos"
     params = {
         "type": "owner",
         "sort": "updated",
